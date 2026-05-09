@@ -1,5 +1,10 @@
-import { AtSymbolIcon, KeyIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  AtSymbolIcon,
+  KeyIcon,
+} from "@heroicons/react/24/outline";
 import { lusitana } from "./font";
+import Button from "./button";
 
 export default function LoginForm() {
   return (
@@ -47,8 +52,17 @@ export default function LoginForm() {
             </div>
           </div>
         </div>
-        {/* LoginButton */}
+        <LoginButton />
       </div>
     </form>
+  );
+}
+
+function LoginButton() {
+  return (
+    <Button className="mt-4 w-full">
+      Se connecter
+      <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+    </Button>
   );
 }
