@@ -1,6 +1,6 @@
 import { sql } from "./db";
 import { formatCurrency } from "./utils";
-import { Revenue } from "./definitions";
+import { LatestInvoice, LatestInvoiceRaw, Revenue } from "./definitions";
 
 export async function fetchRevenus(): Promise<Revenue[]> {
   try {
@@ -9,6 +9,33 @@ export async function fetchRevenus(): Promise<Revenue[]> {
   } catch (error) {
     console.error("Database error: ", error);
     throw new Error("Échec lors de la récupération e données de revenus");
+  }
+}
+export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
+  try {
+    let data = await sql`
+    SELECT
+    invoices.id,
+    invoices.amount,
+    invoices.date,
+    customers.name,
+    customers.image_url,
+    customers.email
+    FROM invoices
+    JOIN customers ON invoices.customer_id = customers.id
+    ORDER BY invoices.date DESC
+    LIMIT 5;
+    `;
+
+    data = data.map((invoice) => ({
+      ...invoice,
+      amount: formatCurrency(invoice.amount),
+    }));
+
+    return data as LatestInvoiceRaw[];
+  } catch (error) {
+    console.error("Database error: ", error);
+    throw new Error("Échec lors de la récupération des dernières factures");
   }
 }
 
