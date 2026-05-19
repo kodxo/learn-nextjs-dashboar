@@ -1,8 +1,10 @@
 import { sql } from "./db";
 import { formatCurrency } from "./utils";
-import { LatestInvoice, LatestInvoiceRaw, Revenue } from "./definitions";
+import { LatestInvoiceRaw, Revenue } from "./definitions";
+import { connection } from "next/server";
 
 export async function fetchRevenus(): Promise<Revenue[]> {
+  await connection();
   try {
     const data = await sql`SELECT * FROM revenue`;
     return data as Revenue[];
@@ -12,6 +14,7 @@ export async function fetchRevenus(): Promise<Revenue[]> {
   }
 }
 export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
+  await connection();
   try {
     let data = await sql`
     SELECT
@@ -40,6 +43,7 @@ export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
 }
 
 export async function fetchCardData() {
+  await connection();
   try {
     // On recupere les données des cards
     const [numberOfInvoices, numberOfCustomers, invoiceStatusData] =
