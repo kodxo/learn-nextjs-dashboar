@@ -6,8 +6,6 @@ export async function fetchRevenues(): Promise<Revenue[]> {
   await connection();
   try {
     const data = await sql`SELECT * FROM revenue`;
-    // wait 03 s
-    await new Promise((resolve) => setTimeout(resolve, 3000));
     return data as Revenue[];
   } catch (error) {
     console.error("Database error: ", error);
@@ -35,7 +33,6 @@ export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
-    await new Promise((resolve) => setTimeout(resolve, 5000));
     return data as LatestInvoiceRaw[];
   } catch (error) {
     console.error("Database error: ", error);
