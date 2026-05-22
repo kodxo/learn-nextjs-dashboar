@@ -108,3 +108,32 @@ export async function fetchInvoices({
     throw new Error("Échec lors de la récupération du nombre de pages");
   }
 }
+
+export async function fetchInvoicesPages({
+  query,
+}: {
+  query: string;
+}) {
+  await connection();
+  try {
+    const invoices = await sql`
+    SELECT COUNT(*) 
+     FROM invoices 
+     JOIN customers ON invoices.customer_id = customers.id
+     WHERE 
+      customers.name ilike ${`%${query}%`}
+      OR 
+      customers.email ilike ${`%${query}%`}
+      OR
+      invoices.amount::text ilike ${`%${query}%`}
+      OR
+      invoices.date::text ilike ${`%${query}%`}
+      OR
+      invoices.status::text ilike ${`%${query}%`}`;
+    const totalPages= Math.ceil(Number(invoices[0].count) / ITEMS_PER_PAGE)
+    return totalPages
+  } catch (error) {
+    console.error("Database error: ", error);
+    throw new Error("Échec lors de la récupération du nombre de pages");
+  }
+}
