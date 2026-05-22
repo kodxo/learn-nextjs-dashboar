@@ -67,3 +67,44 @@ export async function fetchCardData() {
     throw new Error("Erreur lors de la recupération des données de card");
   }
 }
+const ITEMS_PER_PAGE = 6;
+export async function fetchInvoices({
+  query,
+  currentPage,
+}: {
+  query: string;
+  currentPage: number;
+}) {
+  await connection();
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+  try {
+    const invoices = await sql`
+    SELECT 
+      invoices.id,
+      invoices.amount,
+      invoices.date,
+      invoices.status,
+      customers.name,
+      customers.image_url,
+      customers.email
+     FROM invoices 
+     JOIN customers ON invoices.customer_id = customers.id
+     WHERE 
+      customers.name ilike ${`%${query}%`}
+      OR 
+      customers.email ilike ${`%${query}%`}
+      OR
+      invoices.amount::text ilike ${`%${query}%`}
+      OR
+      invoices.date::text ilike ${`%${query}%`}
+      OR
+      invoices.status::text ilike ${`%${query}%`}
+     ORDER BY invoices.date DESC
+     LIMIT ${ITEMS_PER_PAGE}
+     OFFSET ${offset}`;
+    return invoices;
+  } catch (error) {
+    console.error("Database error: ", error);
+    throw new Error("Échec lors de la récupération du nombre de pages");
+  }
+}

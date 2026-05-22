@@ -1,16 +1,15 @@
-import { lusitana } from "../ui/font";
-import RevenueChart from "../ui/dashboard/revenu-chart";
-import LatestInvoices from "../ui/dashboard/lastest-invoice";
+import { lusitana } from "../../ui/font";
+import RevenueChart from "../../ui/dashboard/revenu-chart";
+import LatestInvoices from "../../ui/dashboard/lastest-invoice";
 import { Suspense } from "react";
 import {
   CardsSkeleton,
   LatestInvoicesSkeleton,
   RevenueChartSkeleton,
-} from "../ui/dashboard/skeletons";
+} from "../../ui/skeletons";
 import CardWrapper from "@/app/ui/dashboard/card";
 
 export default async function Page() {
-
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
