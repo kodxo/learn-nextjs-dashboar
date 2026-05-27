@@ -1,6 +1,11 @@
 import { sql } from './db';
 import { formatCurrency } from './utils';
-import { CustomerField, LatestInvoiceRaw, Revenue } from './definitions';
+import {
+  CustomerField,
+  Invoice,
+  LatestInvoiceRaw,
+  Revenue,
+} from './definitions';
 import { connection } from 'next/server';
 export async function fetchRevenues(): Promise<Revenue[]> {
   await connection();
@@ -134,5 +139,24 @@ export async function fetchCustomers() {
   } catch (error) {
     console.error('Database error: ', error);
     throw new Error('Échec lors de la récupération des clients');
+  }
+}
+
+export async function fetchInvoiceById(id: string) {
+  await connection();
+  try {
+    const data = await sql`
+    SELECT 
+      invoices.id,
+      invoices.customer_id,
+      invoices.amount,
+      invoices.date,
+      invoices.status
+     FROM invoices 
+     WHERE id = ${id}`;
+    return data as unknown as Invoice;
+  } catch (error) {
+    console.error('Database error: ', error);
+    throw new Error('Échec lors de la récupération de la facture');
   }
 }

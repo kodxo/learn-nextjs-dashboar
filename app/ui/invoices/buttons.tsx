@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export function CreateInvoiceButton() {
@@ -9,6 +9,17 @@ export function CreateInvoiceButton() {
     >
       <span className="hidden md:block">Créer une facture</span>
       <PlusIcon className="ml-4 h-5 w-5" />
+    </Link>
+  );
+}
+
+export function UpdateInvoice({id}: {id:string}) {
+  return (
+    <Link
+      href={`/dashboard/invoices/${id}/edit`}
+      className="rounded-md border border-gray-200 px-3 py-2 hover:bg-gray-100"
+    >
+      <PencilIcon className="w-5 h-5 text-gray-500" />
     </Link>
   );
 }
