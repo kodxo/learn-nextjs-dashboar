@@ -6,7 +6,7 @@ export async function fetchRevenues(): Promise<Revenue[]> {
   await connection();
   try {
     const data = await sql`SELECT * FROM revenue`;
-    return data as Revenue[];
+    return data as unknown as Revenue[];
   } catch (error) {
     console.error("Database error: ", error);
     throw new Error("Échec lors de la récupération e données de revenus");
@@ -15,25 +15,25 @@ export async function fetchRevenues(): Promise<Revenue[]> {
 export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
   await connection();
   try {
-    let data = await sql`
+    const rawData = await sql`
     SELECT
-    invoices.id,
-    invoices.amount,
-    invoices.date,
-    customers.name,
-    customers.image_url,
-    customers.email
+      invoices.id,
+      invoices.amount,
+      invoices.date,
+      customers.name,
+      customers.image_url,
+      customers.email
     FROM invoices
     JOIN customers ON invoices.customer_id = customers.id
     ORDER BY invoices.date DESC
     LIMIT 5;
     `;
 
-    data = data.map((invoice) => ({
+    const data = rawData.map((invoice) => ({
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
-    return data as LatestInvoiceRaw[];
+    return data as unknown as LatestInvoiceRaw[];
   } catch (error) {
     console.error("Database error: ", error);
     throw new Error("Échec lors de la récupération des dernières factures");

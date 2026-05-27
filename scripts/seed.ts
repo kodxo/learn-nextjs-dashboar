@@ -1,4 +1,4 @@
-import { neon, NeonQueryFunction } from "@neondatabase/serverless";
+import postgres, { Sql } from "postgres";
 import { loadEnvConfig } from "@next/env";
 
 const projectDir = process.cwd();
@@ -12,7 +12,7 @@ import {
 } from "../app/lib/placeholder-data";
 import bcrypt from "bcrypt";
 
-async function seedUsers(sql: NeonQueryFunction<false, false>) {
+async function seedUsers(sql: Sql) {
   try {
     const createTable = await sql`
     CREATE TABLE IF NOT EXISTS users (
@@ -46,7 +46,7 @@ async function seedUsers(sql: NeonQueryFunction<false, false>) {
   }
 }
 
-async function seedCustomers(sql: NeonQueryFunction<false, false>) {
+async function seedCustomers(sql: Sql) {
   try {
     const createTable = await sql`
         CREATE TABLE IF NOT EXISTS customers (
@@ -79,7 +79,7 @@ async function seedCustomers(sql: NeonQueryFunction<false, false>) {
   }
 }
 
-async function seedInvoices(sql: NeonQueryFunction<false, false>) {
+async function seedInvoices(sql: Sql) {
   try {
     const createTable = await sql`
         CREATE TABLE IF NOT EXISTS invoices (
@@ -113,7 +113,7 @@ async function seedInvoices(sql: NeonQueryFunction<false, false>) {
   }
 }
 
-async function seedRevenue(sql: NeonQueryFunction<false, false>) {
+async function seedRevenue(sql: Sql) {
   try {
     const createTable = await sql`
         CREATE TABLE IF NOT EXISTS revenue (
@@ -151,7 +151,7 @@ async function main() {
   }
 
   // On initialise la connexion à la base de données
-  const sql = neon(process.env.DATABASE_URL);
+  const sql = postgres(process.env.DATABASE_URL);
 
   // On active l'extension uuid-ossp pour pouvoir utiliser uuid_generate_v4()
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;

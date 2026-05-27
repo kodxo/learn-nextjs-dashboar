@@ -6,7 +6,7 @@ import { fetchRevenues } from "@/app/lib/data";
 export default async function RevenueChart() {
   const revenues = await fetchRevenues();
   const chartHeight = 350;
-  const { yAxisLabels, topLabel } = generateYAxis(revenues);
+  const { topLabel } = generateYAxis(revenues);
   if (!revenues.length) {
     return (
       <p className="mt-4 text-gray-400 text-sm">
