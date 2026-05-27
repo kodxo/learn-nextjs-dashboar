@@ -6,8 +6,9 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import Button from '../button';
+import { CustomerField } from '@/app/lib/definitions';
 
-export default function Form() {
+export default function Form({ customers }: { customers: CustomerField[] }) {
   return (
     <form>
       <div className='rounded-md bg-gray-50 p-4 md:p-6'>
@@ -26,6 +27,11 @@ export default function Form() {
                 Choisir un client
               </option>
               {/* Map Client*/}
+              {customers.map((customer) => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name}
+                </option>
+              ))}
             </select>
             <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
           </div>
@@ -91,14 +97,14 @@ export default function Form() {
           </div>
         </fieldset>
       </div>
-      <div className="mt-6 flex justify-end gap-4">
+      <div className='mt-6 flex justify-end gap-4'>
         <Link
-          href="/dashboard/invoices"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+          href='/dashboard/invoices'
+          className='flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200'
         >
           Annuler
         </Link>
-        <Button type="submit">Créer la facture</Button>
+        <Button type='submit'>Créer la facture</Button>
       </div>
     </form>
   );

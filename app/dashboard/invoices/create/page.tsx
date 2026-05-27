@@ -1,14 +1,16 @@
 import Breadcrumbs from "@/app/ui/invoices/breadcrumbs";
 import Form from "@/app/ui/invoices/create-form";
+import { fetchCustomers } from "@/app/lib/data";
 
 export default async function CreateInvoicePage() {
+    const customers = await fetchCustomers();
     return (
         <main>
             <Breadcrumbs breadcrumbs={[
                 { label: "Facture", href: "/dashboard/invoices" },
                 { label: "Créer une facture ", href: "/dashboard/invoices/create", active: true },
             ]} />
-            <Form />
+            <Form customers={customers}/>
         </main>
     );
 }

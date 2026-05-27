@@ -1,15 +1,15 @@
-import { sql } from "./db";
-import { formatCurrency } from "./utils";
-import { LatestInvoiceRaw, Revenue } from "./definitions";
-import { connection } from "next/server";
+import { sql } from './db';
+import { formatCurrency } from './utils';
+import { CustomerField, LatestInvoiceRaw, Revenue } from './definitions';
+import { connection } from 'next/server';
 export async function fetchRevenues(): Promise<Revenue[]> {
   await connection();
   try {
     const data = await sql`SELECT * FROM revenue`;
     return data as unknown as Revenue[];
   } catch (error) {
-    console.error("Database error: ", error);
-    throw new Error("Échec lors de la récupération e données de revenus");
+    console.error('Database error: ', error);
+    throw new Error('Échec lors de la récupération e données de revenus');
   }
 }
 export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
@@ -35,8 +35,8 @@ export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
     }));
     return data as unknown as LatestInvoiceRaw[];
   } catch (error) {
-    console.error("Database error: ", error);
-    throw new Error("Échec lors de la récupération des dernières factures");
+    console.error('Database error: ', error);
+    throw new Error('Échec lors de la récupération des dernières factures');
   }
 }
 
@@ -63,8 +63,8 @@ export async function fetchCardData() {
       totalPendingInvoices,
     };
   } catch (error) {
-    console.log("Database Error", error);
-    throw new Error("Erreur lors de la recupération des données de card");
+    console.log('Database Error', error);
+    throw new Error('Erreur lors de la recupération des données de card');
   }
 }
 const ITEMS_PER_PAGE = 6;
@@ -91,29 +91,21 @@ export async function fetchInvoices({
      JOIN customers ON invoices.customer_id = customers.id
      WHERE 
       customers.name ilike ${`%${query}%`}
-      OR 
-      customers.email ilike ${`%${query}%`}
-      OR
-      invoices.amount::text ilike ${`%${query}%`}
-      OR
-      invoices.date::text ilike ${`%${query}%`}
-      OR
-      invoices.status::text ilike ${`%${query}%`}
+      OR customers.email ilike ${`%${query}%`}
+      OR invoices.amount::text ilike ${`%${query}%`}
+      OR invoices.date::text ilike ${`%${query}%`}
+      OR invoices.status::text ilike ${`%${query}%`}
      ORDER BY invoices.date DESC
      LIMIT ${ITEMS_PER_PAGE}
      OFFSET ${offset}`;
     return invoices;
   } catch (error) {
-    console.error("Database error: ", error);
-    throw new Error("Échec lors de la récupération du nombre de pages");
+    console.error('Database error: ', error);
+    throw new Error('Échec lors de la récupération du nombre de pages');
   }
 }
 
-export async function fetchInvoicesPages({
-  query,
-}: {
-  query: string;
-}) {
+export async function fetchInvoicesPages({ query }: { query: string }) {
   await connection();
   try {
     const invoices = await sql`
@@ -122,18 +114,25 @@ export async function fetchInvoicesPages({
      JOIN customers ON invoices.customer_id = customers.id
      WHERE 
       customers.name ilike ${`%${query}%`}
-      OR 
-      customers.email ilike ${`%${query}%`}
-      OR
-      invoices.amount::text ilike ${`%${query}%`}
-      OR
-      invoices.date::text ilike ${`%${query}%`}
-      OR
-      invoices.status::text ilike ${`%${query}%`}`;
-    const totalPages= Math.ceil(Number(invoices[0].count) / ITEMS_PER_PAGE)
-    return totalPages
+      OR customers.email ilike ${`%${query}%`}
+      OR invoices.amount::text ilike ${`%${query}%`}
+      OR invoices.date::text ilike ${`%${query}%`}
+      OR invoices.status::text ilike ${`%${query}%`}`;
+    const totalPages = Math.ceil(Number(invoices[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
   } catch (error) {
-    console.error("Database error: ", error);
-    throw new Error("Échec lors de la récupération du nombre de pages");
+    console.error('Database error: ', error);
+    throw new Error('Échec lors de la récupération du nombre de pages');
+  }
+}
+
+export async function fetchCustomers() {
+  await connection();
+  try {
+    const data = await sql`SELECT id, name FROM customers ORDER BY name ASC`;
+    return data as unknown as CustomerField[];
+  } catch (error) {
+    console.error('Database error: ', error);
+    throw new Error('Échec lors de la récupération des clients');
   }
 }
