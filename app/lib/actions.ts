@@ -22,11 +22,8 @@ export async function createInvoice(formData: FormData) {
     status: formData.get('status'),
   });
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors);
+    console.log(z.flattenError(validatedFields.error).fieldErrors);
     return;
-    /* {
-      errors: validatedFields.error.flatten().fieldErrors,
-    }*/
   }
   const { customer_id, amount, status } = validatedFields.data;
 
@@ -50,11 +47,8 @@ export async function updateInvoice(formData: FormData) {
     date: formData.get('date'),
   });
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors);
+    console.log(z.flattenError(validatedFields.error).fieldErrors);
     return;
-    /* {
-      errors: validatedFields.error.flatten().fieldErrors,
-    }*/
   }
   const { id, customer_id, amount, status, date } = validatedFields.data;
 

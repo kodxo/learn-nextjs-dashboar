@@ -13,7 +13,9 @@ export default function Form({ customers, invoice }: { customers: CustomerField[
   console.log(invoice);
   return (
     <form action={updateInvoice}>
+      <input type="hidden" name="id" value={invoice.id} />
       <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+        {/* Client */}
         <div className='mb-4'>
           <label htmlFor='customer' className='mb-2 block text-sm font-medium'>
             Selectionner un client
