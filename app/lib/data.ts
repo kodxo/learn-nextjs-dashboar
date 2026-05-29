@@ -154,7 +154,7 @@ export async function fetchInvoiceById(id: string) {
       invoices.status
      FROM invoices 
      WHERE id = ${id}`;
-    return data as unknown as Invoice;
+    return data.length==0 ? null : data[0] as unknown as Invoice;
   } catch (error) {
     console.error('Database error: ', error);
     throw new Error('Échec lors de la récupération de la facture');

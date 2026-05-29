@@ -2,7 +2,7 @@
 import { sql } from './db';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+import postgres from 'postgres';
 const InvoiceSchema = z.object({
   id: z.string(),
   customer_id: z.string(),
@@ -15,30 +15,60 @@ const CreateInvoiceShema = InvoiceSchema.omit({
   id: true,
   date: true,
 });
-export async function createInvoice(formData: FormData) {
+export type FormState = {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string | string[]>;
+};
+export async function createInvoice(
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
   const validatedFields = CreateInvoiceShema.safeParse({
     customer_id: formData.get('customer_id'),
     amount: formData.get('amount'),
     status: formData.get('status'),
   });
   if (!validatedFields.success) {
-    console.log(z.flattenError(validatedFields.error).fieldErrors);
-    return;
+    return {
+      success: false,
+      message: 'Problème lors de la validation des données',
+      errors: z.flattenError(validatedFields.error).fieldErrors,
+    };
   }
   const { customer_id, amount, status } = validatedFields.data;
 
   const date = new Date().toISOString().split('T')[0];
-
-  await sql`
+  try {
+    await sql`
         INSERT INTO invoices (customer_id, amount, status, date) VALUES (${customer_id}, ${amount}, ${status}, ${date})
         `;
+  } catch (error) {
+    if (error instanceof postgres.PostgresError)
+      return {
+        success: false,
+        message:
+          'Erreur base de données: échec lors de la création de la facture',
+      };
+    return {
+      success: false,
+      message: 'une erreur interne est survenu',
+    };
+  }
 
   revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+  return {
+    success: true,
+    message: 'La facture à été crée avec succès',
+  };
 }
 
 const EditInvoiceShema = InvoiceSchema;
-export async function updateInvoice(formData: FormData) {
+
+export async function updateInvoice(
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
   const validatedFields = EditInvoiceShema.safeParse({
     id: formData.get('id'),
     customer_id: formData.get('customer_id'),
@@ -47,12 +77,15 @@ export async function updateInvoice(formData: FormData) {
     date: formData.get('date'),
   });
   if (!validatedFields.success) {
-    console.log(z.flattenError(validatedFields.error).fieldErrors);
-    return;
+    return {
+      success: false,
+      message: 'Problème lors de la validation des données',
+      errors: z.flattenError(validatedFields.error).fieldErrors,
+    };
   }
   const { id, customer_id, amount, status, date } = validatedFields.data;
-
-  await sql`
+  try {
+    await sql`
         UPDATE 
           invoices 
         SET 
@@ -62,12 +95,48 @@ export async function updateInvoice(formData: FormData) {
           date = ${date} 
         WHERE id = ${id}
         `;
+  } catch (error) {
+    if (error instanceof postgres.PostgresError)
+      return {
+        success: false,
+        message:
+          'Erreur base de données: échec lors de la mise à jour de la facture',
+      };
+    return {
+      success: false,
+      message: 'une erreur interne est survenu',
+    };
+  }
 
   revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+  return {
+    success: true,
+    message: 'La facture à été mis à jours avec succès',
+  };
 }
 
-export async function deleteInvoice({id}: {id:number}){
- await sql`DELETE FROM invoices WHERE id=${id}`
+export async function deleteInvoice(
+  prevState: FormState,
+  id: number,
+): Promise<FormState> {
+  throw new Error('');
+  try {
+    await sql`DELETE FROM invoices WHERE id=${id}`;
+  } catch (error) {
+    if (error instanceof postgres.PostgresError)
+      return {
+        success: false,
+        message:
+          'Erreur base de données: échec lors de la supression de la facture',
+      };
+    return {
+      success: false,
+      message: 'une erreur interne est survenu',
+    };
+  }
   revalidatePath('/dashboard/invoices');
+  return {
+    success: true,
+    message: 'La facture à été suprimée avec succès',
+  };
 }

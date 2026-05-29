@@ -1,3 +1,4 @@
+'use client';
 import {
   CheckIcon,
   ClockIcon,
@@ -7,13 +8,24 @@ import {
 import Link from 'next/link';
 import Button from '../button';
 import { CustomerField, Invoice } from '@/app/lib/definitions';
-import { updateInvoice } from '@/app/lib/actions';
+import { updateInvoice, FormState } from '@/app/lib/actions';
+import { useActionState } from 'react';
+const initialState: FormState = { success: false, message: '' };
+export default function Form({
+  customers,
+  invoice,
+}: {
+  customers: CustomerField[];
+  invoice: Invoice;
+}) {
+  const [state, formAction, isPending] = useActionState(
+    updateInvoice,
+    initialState,
+  );
 
-export default function Form({ customers, invoice }: { customers: CustomerField[], invoice: Invoice }) {
-  console.log(invoice);
   return (
-    <form action={updateInvoice}>
-      <input type="hidden" name="id" value={invoice.id} />
+    <form action={formAction}>
+      <input type='hidden' name='id' value={invoice.id} />
       <div className='rounded-md bg-gray-50 p-4 md:p-6'>
         {/* Client */}
         <div className='mb-4'>
