@@ -2,9 +2,7 @@ import { fetchInvoices } from '@/app/lib/data';
 import { formatCurrency, formatDateToLocal } from '@/app/lib/utils';
 import Image from 'next/image';
 import InvoiceStatus from './status';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { UpdateInvoice } from './buttons';
+import { UpdateInvoice, DeleteInvoice } from './buttons';
 
 export default async function InvoiceTable({
   query,
@@ -50,6 +48,7 @@ export default async function InvoiceTable({
                   </div>
                   <div className='flex justify-end gap-2'>
                     <UpdateInvoice id={invoice.id} />
+                    <DeleteInvoice id={invoice.id} />
                   </div>
                 </div>
               </div>
@@ -118,7 +117,7 @@ export default async function InvoiceTable({
                     {/* Actions - Utiliser les boutons Edit et Delete */}
                     <div className='flex justify-end gap-3'>
                       <UpdateInvoice id={invoice.id} />
-                     
+                      <DeleteInvoice id={invoice.id} />
                     </div>
                   </td>
                 </tr>
