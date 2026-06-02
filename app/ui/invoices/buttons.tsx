@@ -44,7 +44,11 @@ export function DeleteInvoice({ id }: { id: number }) {
         aria-disabled={isPending}
       >
         <span className='sr-only'>Supprimer</span>
-        <TrashIcon className='w-5' />
+        {isPending ? (
+          <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-gray-500'></div>
+        ) : (
+          <TrashIcon className='w-5' />
+        )}
       </button>
     </form>
   );

@@ -135,7 +135,7 @@ export async function deleteInvoice(
     };
   }
   revalidatePath('/dashboard/invoices');
-  return {
+  return { 
     success: true,
     message: 'La facture à été suprimée avec succès',
   };
