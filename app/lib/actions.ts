@@ -3,23 +3,34 @@ import { sql } from './db';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import postgres from 'postgres';
+export type FormState = {
+  success: boolean;
+  message?: string;
+  errors?: {
+    customer_id?: string[];
+    amount?: string[];
+    status?: string[];
+  };
+};
 const InvoiceSchema = z.object({
   id: z.string(),
-  customer_id: z.string(),
-  amount: z.coerce.number(),
+  customer_id: z.string({
+    error: 'Veuillez sélectionner un client valide',
+  }),
+  amount: z.coerce
+    .number()
+    .gt(0, 'Le montant doit être supérieur à 0'),
   date: z.string(),
-  status: z.enum(['pending', 'paid']),
+  status: z.enum(['pending', 'paid'], {
+    error: 'Veuillez sélectionner un statut valide',
+  }),
 });
 
 const CreateInvoiceShema = InvoiceSchema.omit({
   id: true,
   date: true,
 });
-export type FormState = {
-  success: boolean;
-  message: string;
-  errors?: Record<string, string | string[]>;
-};
+
 export async function createInvoice(
   prevState: FormState,
   formData: FormData,

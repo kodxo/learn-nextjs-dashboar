@@ -1,7 +1,9 @@
+'use client';
 import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
+  PlusIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
@@ -29,7 +31,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               name='customer_id'
               id='customer'
               className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
-              defaultValue=''
+              aria-describedby='customer-error'
             >
               <option value='' disabled>
                 Choisir un client
@@ -42,6 +44,14 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               ))}
             </select>
             <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+          </div>
+          <div id='customer-error' aria-live='polite' aria-atomic='true'>
+            {state.errors?.customer_id &&
+              state.errors.customer_id.map((error) => (
+                <p className='text-sm text-red-500' key={error}>
+                  {error}
+                </p>
+              ))}
           </div>
         </div>
         {/* Montant de la facture */}
@@ -58,8 +68,17 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 step='0.01'
                 placeholder='Entrez le montant'
                 className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                aria-describedby='amount-error'
               />
               <CurrencyDollarIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+            </div>
+            <div id='amount-error' aria-live='polite' aria-atomic='true'>
+              {state.errors?.amount &&
+                state.errors.amount.map((error) => (
+                  <p className='text-sm text-red-500' key={error}>
+                    {error}
+                  </p>
+                ))}
             </div>
           </div>
         </div>
@@ -78,6 +97,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                   value='pending'
                   defaultChecked
                   className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-green-600 focus:ring-2'
+                  aria-describedby='status-error'
                 />
                 <label
                   htmlFor='pending'
@@ -93,6 +113,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                   name='status'
                   value='paid'
                   className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-green-600 focus:ring-2'
+                  aria-describedby='status-error'
                 />
                 <label
                   htmlFor='paid'
@@ -102,8 +123,21 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 </label>
               </div>
             </div>
+            <div id='status-error' aria-live='polite' aria-atomic='true'>
+              {state.errors?.status &&
+                state.errors.status.map((error) => (
+                  <p className='text-sm text-red-500' key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
           </div>
         </fieldset>
+        <div aria-live='polite' aria-atomic='true' className='mt-2'>
+          {state.message && (
+            <p className='text-sm text-red-500'>{state.message}</p>
+          )}
+        </div>
       </div>
       <div className='mt-6 flex justify-end gap-4'>
         <Link
@@ -112,7 +146,16 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
         >
           Annuler
         </Link>
-        <Button type='submit'>Créer la facture</Button>
+        <Button type='submit' disabled={isPending}>
+          {isPending ? (
+            <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-gray-500'></div>
+          ) : (
+            <>
+              Créer la facture
+              <PlusIcon className='ml-4 h-5 w-5' />
+            </>
+          )}
+        </Button>
       </div>
     </form>
   );
