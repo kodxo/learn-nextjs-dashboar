@@ -10,6 +10,7 @@ export type FormState = {
     customer_id?: string[];
     amount?: string[];
     status?: string[];
+    date?: string[];
   };
 };
 const InvoiceSchema = z.object({
@@ -17,9 +18,7 @@ const InvoiceSchema = z.object({
   customer_id: z.string({
     error: 'Veuillez sélectionner un client valide',
   }),
-  amount: z.coerce
-    .number()
-    .gt(0, 'Le montant doit être supérieur à 0'),
+  amount: z.coerce.number().gt(0, 'Le montant doit être supérieur à 0'),
   date: z.string(),
   status: z.enum(['pending', 'paid'], {
     error: 'Veuillez sélectionner un statut valide',
@@ -146,7 +145,7 @@ export async function deleteInvoice(
     };
   }
   revalidatePath('/dashboard/invoices');
-  return { 
+  return {
     success: true,
     message: 'La facture à été suprimée avec succès',
   };
