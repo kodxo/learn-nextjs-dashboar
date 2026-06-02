@@ -1,5 +1,5 @@
 'use client';
-import { deleteInvoice } from '@/app/lib/actions';
+import { deleteInvoice, FormState, FormState } from '@/app/lib/actions';
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useActionState } from 'react';
@@ -27,19 +27,22 @@ export function UpdateInvoice({ id }: { id: string }) {
   );
 }
 
-const initialState = { message: '' };
+const initialState: FormState = { message: '', success: false };
 
 export function DeleteInvoice({ id }: { id: number }) {
-  const deleteInvoiceWithId = deleteInvoice.bind(null, { id });
-
   const [state, formAction, isPending] = useActionState(
-    deleteInvoiceWithId,
+    deleteInvoice,
     initialState,
   );
 
   return (
     <form action={formAction}>
-      <button className='rounded-md border p-2 hover:bg-gray-100'>
+      <input type='hidden' name='id' value={id} />
+      <button
+        className='rounded-md border p-2 hover:bg-gray-100'
+        disabled={isPending}
+        aria-disabled={isPending}
+      >
         <span className='sr-only'>Supprimer</span>
         <TrashIcon className='w-5' />
       </button>

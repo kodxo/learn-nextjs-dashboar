@@ -117,9 +117,9 @@ export async function updateInvoice(
 
 export async function deleteInvoice(
   prevState: FormState,
-  id: number,
+  formData: FormData,
 ): Promise<FormState> {
-  throw new Error('');
+  const id = formData.get('id') as string;
   try {
     await sql`DELETE FROM invoices WHERE id=${id}`;
   } catch (error) {
