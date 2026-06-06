@@ -2,6 +2,7 @@ import { sql } from './db';
 import { formatCurrency } from './utils';
 import {
   CustomerField,
+  FormattedCustomersTable,
   Invoice,
   LatestInvoiceRaw,
   Revenue,
@@ -154,9 +155,70 @@ export async function fetchInvoiceById(id: string) {
       invoices.status
      FROM invoices 
      WHERE id = ${id}`;
-    return data.length==0 ? null : data[0] as unknown as Invoice;
+    return data.length == 0 ? null : (data[0] as unknown as Invoice);
   } catch (error) {
     console.error('Database error: ', error);
     throw new Error('Échec lors de la récupération de la facture');
+  }
+}
+
+export async function fetchFilteredCustomers({
+  query,
+  currentPage,
+}: {
+  query?: string;
+  currentPage?: number;
+}) {
+  const offset = ((currentPage ?? 1) - 1) * ITEMS_PER_PAGE;
+  await connection();
+  try {
+    const rawData = await sql`
+    SELECT
+      customers.id,
+      customers.name,
+      customers.email,
+      customers.image_url,
+      COUNT(invoices.id) AS total_invoices,
+      SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
+      SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
+    FROM customers
+    LEFT JOIN invoices ON customers.id = invoices.customer_id
+    WHERE
+      customers.name ILIKE ${`%${query}%`} 
+      OR customers.email ILIKE ${`%${query}%`}
+    GROUP BY customers.id, customers.name, customers.email, customers.image_url
+    ORDER BY customers.name ASC
+    LIMIT ${ITEMS_PER_PAGE}
+    OFFSET ${offset}
+    `;
+    const customers = rawData.map((customer) => {
+      return {
+        ...customer,
+        total_pending: formatCurrency(customer.total_pending),
+        total_paid: formatCurrency(customer.total_paid),
+      };
+    });
+    return customers as unknown as FormattedCustomersTable[];
+  } catch (error) {
+    console.error('Database error: ', error);
+    throw new Error('Échec lors de la récupération des clients');
+  }
+}
+
+export async function fetchCustomersPages({ query }: { query: string }) {
+  await connection();
+  try {
+    const customers = await sql`
+    SELECT COUNT(*) 
+     FROM customers 
+     JOIN invoices ON customers.id = invoices.customer_id
+     WHERE 
+      customers.name ilike ${`%${query}%`}
+      OR customers.email ilike ${`%${query}%`}`;
+    const totalPages = Math.ceil(Number(customers[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database error: ', error);
+    throw new Error('Échec lors de la récupération du nombre de pages');
   }
 }
