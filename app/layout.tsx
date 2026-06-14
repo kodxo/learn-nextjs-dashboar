@@ -5,7 +5,10 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: {
+    default: "Tableau de bord ACME",
+    template: "%s | Tableau de bord ACME",
+  },
   description: "Exercice app Next.js Dashboard avec AppRouter",
 };
 

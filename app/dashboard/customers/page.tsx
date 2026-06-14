@@ -5,6 +5,11 @@ import Pagination from '@/app/ui/invoices/pagination';
 import Search from '@/app/ui/search';
 import { CustomersTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Clients',
+};
 
 export default async function Page({
   searchParams,
